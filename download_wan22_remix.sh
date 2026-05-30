@@ -45,7 +45,18 @@
 
 set -euo pipefail
 
-COMFY_DIR="${COMFY_DIR:-/workspace/runpod-slim/ComfyUI}"
+# Auto-detect the ComfyUI root unless COMFY_DIR is set explicitly.
+# Handles AI-Dock (/workspace/ComfyUI or /opt/ComfyUI) and plain installs.
+if [ -z "${COMFY_DIR:-}" ]; then
+    for _c in /workspace/ComfyUI /opt/ComfyUI /workspace/runpod-slim/ComfyUI; do
+        if [ -f "$_c/main.py" ]; then COMFY_DIR="$_c"; break; fi
+    done
+    if [ -z "${COMFY_DIR:-}" ]; then
+        _found="$(find /workspace /opt -maxdepth 3 -name main.py -path '*ComfyUI*' 2>/dev/null | head -n1 || true)"
+        [ -n "$_found" ] && COMFY_DIR="$(dirname "$_found")"
+    fi
+    COMFY_DIR="${COMFY_DIR:-/workspace/runpod-slim/ComfyUI}"
+fi
 SKIP_NODES="${SKIP_NODES:-0}"
 SKIP_OPTIONAL="${SKIP_OPTIONAL:-0}"
 SKIP_RIFE="${SKIP_RIFE:-0}"
@@ -67,6 +78,8 @@ mkdir -p "$DIFFUSION_DIR" "$TEXT_ENC_DIR" "$VAE_DIR" "$LORA_DIR" "$NODES_DIR"
 # Pick the Python that ComfyUI runs on, so node deps land in the right environment.
 if [ -n "${PYTHON_BIN:-}" ]; then
     :
+elif [ -x /opt/micromamba/envs/comfyui/bin/python ]; then
+    PYTHON_BIN="/opt/micromamba/envs/comfyui/bin/python"   # AI-Dock comfyui env
 elif [ -x "$COMFY_DIR/venv/bin/python" ]; then
     PYTHON_BIN="$COMFY_DIR/venv/bin/python"
 elif command -v python3 >/dev/null 2>&1; then
