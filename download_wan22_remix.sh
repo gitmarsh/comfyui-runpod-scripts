@@ -33,7 +33,7 @@
 # Usage:
 #   chmod +x download_wan22_remix.sh
 #   ./download_wan22_remix.sh                       # nodes + required + Lightning + RIFE
-#   COMFY_DIR=/workspace/ComfyUI ./download_wan22_remix.sh
+#   COMFY_DIR=/workspace/ComfyUI ./download_wan22_remix.sh   # override the ComfyUI root
 #   SKIP_NODES=1 ./download_wan22_remix.sh          # skip custom-node install, models only
 #   SKIP_OPTIONAL=1 ./download_wan22_remix.sh       # skip Lightning LoRAs AND RIFE
 #   SKIP_RIFE=1 ./download_wan22_remix.sh           # keep Lightning, skip RIFE only
@@ -44,7 +44,7 @@
 
 set -euo pipefail
 
-COMFY_DIR="${COMFY_DIR:-/workspace/ComfyUI}"
+COMFY_DIR="${COMFY_DIR:-/workspace/runpod-slim/ComfyUI}"
 SKIP_NODES="${SKIP_NODES:-0}"
 SKIP_OPTIONAL="${SKIP_OPTIONAL:-0}"
 SKIP_RIFE="${SKIP_RIFE:-0}"
