@@ -23,7 +23,7 @@
     "inputs": {
       "model": "Wan2.2_Remix_NSFW_i2v_14b_high_lighting_v2.0.safetensors",
       "base_precision": "bf16",
-      "quantization": "fp8_e4m3fn",
+      "quantization": "disabled",
       "load_device": "offload_device",
       "lora": ["3", 0]
     }
