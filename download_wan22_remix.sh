@@ -78,8 +78,12 @@ mkdir -p "$DIFFUSION_DIR" "$TEXT_ENC_DIR" "$VAE_DIR" "$LORA_DIR" "$NODES_DIR"
 # Pick the Python that ComfyUI runs on, so node deps land in the right environment.
 if [ -n "${PYTHON_BIN:-}" ]; then
     :
+elif [ -n "${COMFYUI_VENV_PYTHON:-}" ] && [ -x "${COMFYUI_VENV_PYTHON}" ]; then
+    PYTHON_BIN="$COMFYUI_VENV_PYTHON"                          # AI-Dock exports this
+elif [ -x /opt/environments/python/comfyui/bin/python ]; then
+    PYTHON_BIN="/opt/environments/python/comfyui/bin/python"   # AI-Dock comfyui venv
 elif [ -x /opt/micromamba/envs/comfyui/bin/python ]; then
-    PYTHON_BIN="/opt/micromamba/envs/comfyui/bin/python"   # AI-Dock comfyui env
+    PYTHON_BIN="/opt/micromamba/envs/comfyui/bin/python"      # AI-Dock (mamba variant)
 elif [ -x "$COMFY_DIR/venv/bin/python" ]; then
     PYTHON_BIN="$COMFY_DIR/venv/bin/python"
 elif command -v python3 >/dev/null 2>&1; then
