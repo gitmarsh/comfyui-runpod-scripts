@@ -37,6 +37,7 @@
 #   SKIP_NODES=1 ./download_wan22_remix.sh          # skip custom-node install, models only
 #   SKIP_OPTIONAL=1 ./download_wan22_remix.sh       # skip Lightning LoRAs AND RIFE
 #   SKIP_RIFE=1 ./download_wan22_remix.sh           # keep Lightning, skip RIFE only
+#   SKIP_SAGEATTN=1 ./download_wan22_remix.sh       # don't install sageattention
 #   UPDATE=1 ./download_wan22_remix.sh              # git pull custom nodes that already exist
 #   USE_CUPY=1 ./download_wan22_remix.sh            # Frame-Interpolation with cupy acceleration
 #   PYTHON_BIN=/path/to/python ./download_wan22_remix.sh
@@ -48,6 +49,7 @@ COMFY_DIR="${COMFY_DIR:-/workspace/runpod-slim/ComfyUI}"
 SKIP_NODES="${SKIP_NODES:-0}"
 SKIP_OPTIONAL="${SKIP_OPTIONAL:-0}"
 SKIP_RIFE="${SKIP_RIFE:-0}"
+SKIP_SAGEATTN="${SKIP_SAGEATTN:-0}"
 UPDATE="${UPDATE:-0}"
 USE_CUPY="${USE_CUPY:-0}"
 HF_TOKEN="${HF_TOKEN:-}"
@@ -158,6 +160,13 @@ if [ "$SKIP_NODES" != "1" ]; then
 
     d="$(clone_node https://github.com/kijai/ComfyUI-WanVideoWrapper.git)"
     [ -f "$d/requirements.txt" ] && pip_install -r "$d/requirements.txt"
+
+    # SageAttention: optional speed-up WanVideoWrapper uses when a node's
+    # attention_mode is set to sageattn. Non-fatal: if it won't install,
+    # set attention_mode=sdpa on the WanVideo Model Loader node instead.
+    if [ "$SKIP_SAGEATTN" != "1" ]; then
+        pip_install sageattention || echo "[!] sageattention install failed; set WanVideo attention_mode=sdpa in the graph."
+    fi
 
     clone_node https://github.com/pythongosssss/ComfyUI-Custom-Scripts.git >/dev/null
 
